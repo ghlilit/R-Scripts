@@ -1,0 +1,168 @@
+---
+title: "Homework 3"
+author: "Ghandilyan Lilit"
+date: "October 8, 2017"
+output: pdf_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=F, message=F)
+library(ggplot2)
+library(caret)
+library(ROCR)
+library(digest)
+```
+(1 point) Read the file Attrition.csv into R. 
+The general objective of this analysis will be predicting whether certain employees will quit their job at this company or not (which is reflected in the Attrition variable). First, check whether the variables have the right data types and make appropriate corrections if needed.
+
+```{r}
+df <- read.csv("Attrition2.csv")
+levels = c(1,2,3,4)
+lab = c("low", "medium", "high", "very high")
+df$EnvironmentSatisfaction <- factor(df$EnvironmentSatisfaction, levels, lab)
+df$JobLevel <- as.factor(df$JobLevel)
+df$StockOptionLevel <- as.factor(df$StockOptionLevel)
+summary(df)
+```
+
+(4 points) Explore the relationship between the variables OverTime and Attrition.
+First calculate what is the probability that an emloyee leaves the company given that he/she worked overtime.
+Second, using ggplot2 construct a barplot to show the relationship between these variables (based on probabilities of attrition)
+Third, construct a barplot illustrating the relationship between Environment Satisfaction and Attrition
+Comment on all the results
+```{r}
+
+counts <- addmargins(table(df$Attrition, df$OverTime))
+prob <- 100/336
+
+plt<-ggplot(df, aes(x=OverTime, fill=Attrition)) + geom_bar(position = "fill")
+plt
+
+plt<-ggplot(df, aes(x=EnvironmentSatisfaction, fill=Attrition)) + geom_bar( position = "fill")
+plt
+
+```
+The first plot shows that around 30 percent of the employees who worked overtime quitted, while around 12 percent of those who did not work overtime did. The second shows that the likelihood of Attrition is lower for the very high environment satisfaction level. For other levels attrition is almost equally likely.
+
+(3 points)
+USing ggplot2 visualize the difference between the distribution of the DailyRate depending on the fact whether the employee left the company or stayed and comment on the differences.
+```{r}
+ggplot(aes(Attrition, DailyRate), data = df) + geom_boxplot()
+
+```
+The median salary for the employees who did not quit is higher.
+
+(1 point)Subset the data into 2 random samples, 1st one will serve as a training data set containing 80% of the cases from Attrition data set while the 2nd will be the test dataset containing the 20% of the cases, respectively.(Do not forget to set seed)
+This time, use caret package for data partitioning.
+
+```{r}
+trainIndex <- createDataPartition(df$Attrition, p = 0.8, list = F)
+Train <- df[trainIndex, ]
+Test <- df[-trainIndex, ]
+```
+
+
+(5 points) Build a logistic regression model on the train data set having Attrition as a dependent variable and all the others as independent variables. Comment on which variables are significant for the model. Looking at the signs of coeffecients, comment whether the relationships are the same as while running the above analysis.
+
+```{r}
+model <- glm(formula = Attrition~., family = "binomial", data = df)
+summary(model)
+```
+Categoric variables are considered significant if at least one level shows significance. Thus, all categoric variables are significant. Of the numeric variables, all are significant except TotalWorkingYears. 
+In the analysis above, we were looking at the relationship between
+
+1.Attrition and DailyRate
+As DailyRate increases the logits of Attrition decrease
+(negative correlation both in the plot and by coefficients)
+
+2.Attrition and OverTime
+If an employee worked overtime the logits of Attrition increases
+(the same result both in the plot and by coefficients)
+
+3.Attrition and Environment Satisfaction
+For higher levels of satisfaction level(the base level is low) the logits of Attrition decrease
+(the same result both in the plot and by coefficients)
+
+(7 points) Print the coeficients of the model, also  create the exponents of the coeficients. How will you interpret the coefficients in terms of their impact on odds and logit (log odds). Comment on 4 variables: 2 numeric and 2 categorical ones.
+
+```{r}
+coefficients(model)
+exp(coefficients(model))
+
+```
+For each unit increase in Years in current role, the logits of Attrition decrease by 0.0849, and the odds decrease by 8.14 percent. 
+For each unit increase in Daily Rate, the logits of Attrition decrease by 0.0005, and the odds decrease by 0.05 percent. 
+
+If an employee worked overtime, the logits of Attrition increase by 1.53, and the odds increase by 466 percent.
+Odds of Attrition for StockOptionLevel1 is 31 percent of the odds of StockOption0, base level.
+
+(4 points) Using the coeficients, calculate the probability of an employee to leave the company if the given employee's daily rate is 356, environment satisfaction is high, joblevel is 2, has worked overtime, uses 2nd stock option, has worked for 3 years and 2 years of this were in the same position.
+```{r}
+exp <- exp( 0.4671273806 + 356 * -0.0005003621 -0.9994465651 -0.9915872518
+            + 1.5397193377 -1.3302965045 + 3* -0.0269146527 + 2* -0.0849912996)
+prob <- exp/(1+exp)
+prob
+```
+
+(3 points) Build and save another model eliminating the variables which were not significant predictors for attrition.
+```{r}
+model2 <- glm(formula = Attrition~.-TotalWorkingYears, family = "binomial", data = df)
+summary(model2)
+```
+
+(8 points) Use the 2 models you built to make predictions on the test data set
+Using the threshold of 0.5, convert probabilities into classes.Create a confusion matrixes for both.
+Calculate the accuracy of the models,sensitivity and specificity,Positive and negative predictive values(PPV and NPV). Make comments on the models' peformance based on these indicators.
+Are those performing better than comparing accuracy with no information rate?
+```{r}
+pr <- predict(model, newdata = Test, type = "response")
+pr1 <- factor(ifelse(pr > 0.5, "Yes", "No"))
+confusionMatrix(data = pr1, Test$Attrition, positive = "Yes")
+Accuracy1 <- (195 + 11)/235
+Sensitivity1 <- 11/38
+Specificity1 <- 195/197
+PPV1 <- 11/13
+NPV1 <- 195/(195+27)
+
+pr2 <- predict(model2, newdata = Test, type = "response")
+pr2 <- factor(ifelse(pr2 > 0.5, "Yes", "No"))
+confusionMatrix(data = pr2, Test$Attrition, positive = "Yes")
+Accuracy2 <- (195 + 10)/235
+Sensitivity2 <- 10/38
+Specificity2 <- 195/197
+PPV2 <- 10/12
+NPV2 <- 195/(195+28)
+
+```
+Both models have high specificity, meaning they correctly identify the employees who are not going to quit. However, the sensitivity value is very low, meaning that many employees who are going to quit are not identified correctly. This might mean that the cutoff value is too high. Both models perform better than the No information Rate model.
+
+
+(7 points) Use the threshhold of 0.7 while creating the confusion matrix for the second model. Elaborate on the changes in sensitivity, specificity, PPV, NPV and overall accuracy. which classification makes your model better?
+
+```{r}
+pr2 <- predict(model2, newdata = Test, type = "response")
+pr2 <- factor(ifelse(pr2 > 0.7, "Yes", "No"))
+confusionMatrix(data = pr2, Test$Attrition, positive = "Yes")
+```
+We have lower sensitivity, which means more people who are going to quit are not identified. This supports the claim that the cutoff value should be lower. 
+
+(7 points) Create ROC curves for each model and comment on it.
+Calculate AUC value for each model and make relevant comparisons.
+
+
+```{r}
+pr <- predict(model, newdata = Test, type = "response")
+pred1 <- prediction(pr, Test$Attrition)
+perf = performance(pred1, "tpr", "fpr")
+plot(perf, colorize = TRUE)
+
+pr2 <- predict(model2, newdata = Test, type = "response")
+pred2 <- prediction(pr2, Test$Attrition)
+perf = performance(pred2, "tpr", "fpr")
+plot(perf, colorize = TRUE)
+
+auc <- performance(pred1, "auc")@y.values
+auc
+auc2 <- performance(pred2, "auc")@y.values
+auc2
+```
+The second model has higher AUC value, because we removed a non-significant variable, although the values are not too different. The higher the ROC value, the worse is the model.

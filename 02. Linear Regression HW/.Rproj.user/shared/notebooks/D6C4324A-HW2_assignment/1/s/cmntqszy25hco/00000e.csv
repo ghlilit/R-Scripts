@@ -1,0 +1,2 @@
+"0","df$age <- 2018 - df$yr_built"
+"0","ggplot(aes(age, price), data = df) + geom_point()"

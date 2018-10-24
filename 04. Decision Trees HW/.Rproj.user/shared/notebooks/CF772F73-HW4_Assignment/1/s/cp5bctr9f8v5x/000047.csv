@@ -1,0 +1,5 @@
+"0","medD <- df %>% group_by(Churn) %>% summarize(mean(Day.Mins))"
+"0","medE <- df %>% group_by(Churn) %>% summarize(mean(Eve.Mins))"
+"0","ggplot(df, aes(x = Day.Mins, colour = Churn)) +"
+"0","  geom_freqpoly(binwidth = 20) + geom_vline(aes(xintercept = medD[[1,2]]),col='firebrick1',size=0.5) +"
+"0","  geom_vline(aes(xintercept = medD[[2,2]]),col='dodgerblue',size=0.5)"

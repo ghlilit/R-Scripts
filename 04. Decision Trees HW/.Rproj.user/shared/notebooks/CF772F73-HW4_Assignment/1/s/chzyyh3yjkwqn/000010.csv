@@ -1,0 +1,2 @@
+"0","model <- rpart(Churn~., train)"
+"0","prp(model, type = 2, extra = 1)"

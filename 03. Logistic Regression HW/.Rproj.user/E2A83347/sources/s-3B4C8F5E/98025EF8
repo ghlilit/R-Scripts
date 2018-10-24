@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1539352043318.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "814889699",
+    "id" : "98025EF8",
+    "lastKnownWriteTime" : 1539358431,
+    "last_content_update" : 1539358431847,
+    "path" : "~/Desktop/R-Scripts/Logistic Regression HW/Homework 3_Assignment.Rmd",
+    "project_path" : "Homework 3_Assignment.Rmd",
+    "properties" : {
+        "cursorPosition" : "45,97",
+        "scrollLine" : "43"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

@@ -1,0 +1,2 @@
+"0","plt<-ggplot(df, aes(x=EnvironmentSatisfaction, fill=Attrition)) + geom_bar( position = ""fill"")"
+"0","plt"

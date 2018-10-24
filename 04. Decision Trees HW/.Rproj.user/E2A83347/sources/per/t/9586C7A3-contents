@@ -1,0 +1,33 @@
+df <- read.csv("HR_data.csv")
+library(rpart)
+library(rpart.plot)
+library(caret)
+library(rattle)
+library(ROCR)
+set.seed(1)
+summary(df)
+trainIndex <- createDataPartition(df$left, p = 0.8, list = F)
+Train <- df[trainIndex, ]
+Test <- df[-trainIndex, ]
+log_md <- glm(left~., family = "binomial", data = Train)
+c <- coefficients(log_md)
+exp(c)
+#Interpretation 
+pr <- predict(log_md, newdata = Test, type = "response")
+pr <- factor(ifelse(pr > 0.5, "Yes", "No"))
+confusionMatrix(data = pr, Test$left, positive = "Yes")
+
+dt_md <- rpart(left~., data = df)
+asRules(dt_md)
+pr2 <- predict(dt_md, newdata = Test, type = "class")
+confusionMatrix(data = pr2, Test$left, positive = "Yes")
+
+pr <- predict(log_md, newdata = Test, type = "response")
+pred <- prediction(pr, Test$left)
+auc <- performance(pred, "auc")@y.values
+auc
+
+pred2 <- predict(dt_md, Test)
+P_test <- prediction(pred2[,2], Test$left)
+auc2 <- performance(P_test, "auc")@y.values
+auc2

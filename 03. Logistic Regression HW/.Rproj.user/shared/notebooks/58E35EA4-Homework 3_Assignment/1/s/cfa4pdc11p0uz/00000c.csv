@@ -1,0 +1,1 @@
+"0","ggplot(aes(DailyRate), data = df) + geom_histogram(bins = 10) +  facet_wrap(~Attrition, ncol = 2)"

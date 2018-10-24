@@ -1,0 +1,248 @@
+"0","asRules(model)"
+"1","
+"
+"1"," Rule number: 29 "
+"1","[Churn=1 cover=8 (0%) prob=1.00]
+"
+"1","   Day.Mins>=264.6
+"
+"1","   Messages< 6.5
+"
+"1","   Eve.Mins< 184.7
+"
+"1","   Day.Mins>=311.2
+"
+"1","
+"
+"1"," Rule number: 19 "
+"1","[Churn=1 cover=39 (1%) prob=1.00]
+"
+"1","   Day.Mins< 264.6
+"
+"1","   CallCenter.enquiry< 3.5
+"
+"1","   Call.Plan=1
+"
+"1","   Intern..Min>=13.1
+"
+"1","
+"
+"1"," Rule number: 15 "
+"1","[Churn=1 cover=82 (3%) prob=0.96]
+"
+"1","   Day.Mins>=264.6
+"
+"1","   Messages< 6.5
+"
+"1","   Eve.Mins>=184.7
+"
+"1","
+"
+"1"," Rule number: 83 "
+"1","[Churn=1 cover=13 (0%) prob=0.92]
+"
+"1","   Day.Mins< 264.6
+"
+"1","   CallCenter.enquiry>=3.5
+"
+"1","   Day.Mins>=160.2
+"
+"1","   Eve.Mins>=135.1
+"
+"1","   Day.Mins< 175.8
+"
+"1","   Eve.Mins< 212.2
+"
+"1","
+"
+"1"," Rule number: 11 "
+"1","[Churn=1 cover=83 (3%) prob=0.88]
+"
+"1","   Day.Mins< 264.6
+"
+"1","   CallCenter.enquiry>=3.5
+"
+"1","   Day.Mins< 160.2
+"
+"1","
+"
+"1"," Rule number: 143 "
+"1","[Churn=1 cover=38 (1%) prob=0.87]
+"
+"1","   Day.Mins< 264.6
+"
+"1","   CallCenter.enquiry< 3.5
+"
+"1","   Call.Plan=0
+"
+"1","   Day.Mins>=224.6
+"
+"1","   Eve.Mins>=242.4
+"
+"1","   Messages< 5.5
+"
+"1","   Night.Mins>=172.5
+"
+"1","
+"
+"1"," Rule number: 21 "
+"1","[Churn=1 cover=11 (0%) prob=0.73]
+"
+"1","   Day.Mins< 264.6
+"
+"1","   CallCenter.enquiry>=3.5
+"
+"1","   Day.Mins>=160.2
+"
+"1","   Eve.Mins< 135.1
+"
+"1","
+"
+"1"," Rule number: 57 "
+"1","[Churn=1 cover=14 (1%) prob=0.64]
+"
+"1","   Day.Mins>=264.6
+"
+"1","   Messages< 6.5
+"
+"1","   Eve.Mins< 184.7
+"
+"1","   Day.Mins< 311.2
+"
+"1","   Night.Mins>=212.6
+"
+"1","
+"
+"1"," Rule number: 18 "
+"1","[Churn=0 cover=175 (7%) prob=0.23]
+"
+"1","   Day.Mins< 264.6
+"
+"1","   CallCenter.enquiry< 3.5
+"
+"1","   Call.Plan=1
+"
+"1","   Intern..Min< 13.1
+"
+"1","
+"
+"1"," Rule number: 142 "
+"1","[Churn=0 cover=14 (1%) prob=0.14]
+"
+"1","   Day.Mins< 264.6
+"
+"1","   CallCenter.enquiry< 3.5
+"
+"1","   Call.Plan=0
+"
+"1","   Day.Mins>=224.6
+"
+"1","   Eve.Mins>=242.4
+"
+"1","   Messages< 5.5
+"
+"1","   Night.Mins< 172.5
+"
+"1","
+"
+"1"," Rule number: 6 "
+"1","[Churn=0 cover=42 (2%) prob=0.10]
+"
+"1","   Day.Mins>=264.6
+"
+"1","   Messages>=6.5
+"
+"1","
+"
+"1"," Rule number: 40 "
+"1","[Churn=0 cover=88 (3%) prob=0.09]
+"
+"1","   Day.Mins< 264.6
+"
+"1","   CallCenter.enquiry>=3.5
+"
+"1","   Day.Mins>=160.2
+"
+"1","   Eve.Mins>=135.1
+"
+"1","   Day.Mins>=175.8
+"
+"1","
+"
+"1"," Rule number: 34 "
+"1","[Churn=0 cover=225 (8%) prob=0.09]
+"
+"1","   Day.Mins< 264.6
+"
+"1","   CallCenter.enquiry< 3.5
+"
+"1","   Call.Plan=0
+"
+"1","   Day.Mins>=224.6
+"
+"1","   Eve.Mins< 242.4
+"
+"1","
+"
+"1"," Rule number: 56 "
+"1","[Churn=0 cover=23 (1%) prob=0.09]
+"
+"1","   Day.Mins>=264.6
+"
+"1","   Messages< 6.5
+"
+"1","   Eve.Mins< 184.7
+"
+"1","   Day.Mins< 311.2
+"
+"1","   Night.Mins< 212.6
+"
+"1","
+"
+"1"," Rule number: 16 "
+"1","[Churn=0 cover=1778 (67%) prob=0.03]
+"
+"1","   Day.Mins< 264.6
+"
+"1","   CallCenter.enquiry< 3.5
+"
+"1","   Call.Plan=0
+"
+"1","   Day.Mins< 224.6
+"
+"1","
+"
+"1"," Rule number: 82 "
+"1","[Churn=0 cover=15 (1%) prob=0.00]
+"
+"1","   Day.Mins< 264.6
+"
+"1","   CallCenter.enquiry>=3.5
+"
+"1","   Day.Mins>=160.2
+"
+"1","   Eve.Mins>=135.1
+"
+"1","   Day.Mins< 175.8
+"
+"1","   Eve.Mins>=212.2
+"
+"1","
+"
+"1"," Rule number: 70 "
+"1","[Churn=0 cover=19 (1%) prob=0.00]
+"
+"1","   Day.Mins< 264.6
+"
+"1","   CallCenter.enquiry< 3.5
+"
+"1","   Call.Plan=0
+"
+"1","   Day.Mins>=224.6
+"
+"1","   Eve.Mins>=242.4
+"
+"1","   Messages>=5.5
+"
+"1","
+"

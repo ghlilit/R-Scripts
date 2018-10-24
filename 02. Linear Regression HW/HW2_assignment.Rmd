@@ -1,0 +1,187 @@
+---
+title: "Homework 2"
+author: "Ghandilyan Lilit"
+date: "10/6/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=F, message=F)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+## We will be using the housing dataset. You are provided with the description of the dataset.
+
+(2 point)Load the housing.csv and check whether the data types are correct, if not, make appropriate corrections assigning labels to each level according to the data description, so that it will be easy to interpret the model results during the next steps.
+
+Pay attention to the variable grade. You can use function cut() here or something like it.
+
+```{r}
+df <- read.csv("housing.csv")
+str(df)
+df <- df %>% separate(date, "date", sep = "T000000")
+df$date <- as.Date(df$date, "%Y%m%d")
+df$price <- df$price/1000
+df$waterfront  <- as.factor(df$waterfront)
+df$view <- as.factor(df$view)
+df$condition <- as.factor(df$condition)
+df$zipcode <- as.factor(df$zipcode)
+df$grade <- cut(df$grade, breaks = 12, labels = c(1:12))
+
+
+```
+
+(2 points) Create a variable with building's age (The data is collected at 2018). visualize the relationship between the newly created variable with the price and comment whether it can be significant predictor for the price.
+
+```{r}
+df$age <- 2018 - df$yr_built
+ggplot(aes(age, price), data = df) + geom_point()
+#The plot does not show any clear relationship.
+t.test(df$age, df$price)
+#The p value is smaller than 0.05, so the relationship is significant.
+#To avoid multicolinearity, I am going to delete the yr_built column.
+df<-subset(df, select = -c(yr_built))
+```
+
+(2 points) Our goal in this analysis will be building a model to predict the price of the houses as accurately as possible. First, write a code to check what variables are highly correlated with the price variable.
+Hint: use function ?cor()
+
+```{r}
+cor(df$price, df[, c(4:7, 13:15, 19:21)]) 
+```
+
+(3 points) Visualize the relationship between the independent variables. In case you see it might cause multicolinearity  during the modeling, also print correlation coeficients and make a note to act accordingly during modeling.
+Hint: usually variables having more than 0.7 correlation coeficients might cause multicolinearity.
+
+1. the relationship between number of bedrooms and living area in sqft
+
+```{r}
+ggplot(aes(df$bedrooms, df$sqft_living), data = df)+geom_point()
+cor(df$bedrooms, df$sqft_living)
+```
+2. the relationship betweeen the living area in sqft and the number of bathrooms
+```{r}
+ggplot(aes(df$bathrooms, df$sqft_living), data = df)+geom_point()
+cor(df$sqft_living, df$bathrooms)
+```
+3. the relationship between number of bedrooms and number of bathrooms
+```{r}
+ggplot(aes(df$bathrooms, df$bedrooms), data = df)+geom_point()
+cor(df$bedrooms, df$bathrooms)
+```
+
+4. the relationship betwen sqft_living and sqft_above 
+```{r}
+ggplot(aes(df$sqft_above, df$sqft_living), data = df)+geom_point()
+cor(df$sqft_living, df$sqft_above)
+```
+
+(5 point) Usig ggplot visualizations explore the relationships between categorical variables and price.
+Also try to visualize whether the relationship between price and other numeric variables differ based on categorical variables such as waterfront, view, condition and grade.
+```{r}
+ggplot(df, aes(waterfront, price)) + geom_boxplot()
+ggplot(df, aes(view, price)) + geom_boxplot()
+ggplot(df, aes(condition, price)) + geom_boxplot()
+ggplot(df, aes(grade, price)) + geom_boxplot()
+
+
+plt <- ggplot(df, aes(bedrooms, price)) + geom_point(na.rm = TRUE)
+plt + facet_wrap(~grade, ncol = 4)
+
+plt <- ggplot(df, aes(sqft_living, price)) + geom_point(na.rm = TRUE)
+plt + facet_wrap(~view, ncol = 2)
+
+plt <- ggplot(df, aes(sqft_living, price)) + geom_point(na.rm = TRUE)
+plt + facet_wrap(~condition, ncol = 2)
+
+plt <- ggplot(df, aes(sqft_above, price)) + geom_point(na.rm = TRUE)
+plt + facet_wrap(~waterfront, ncol = 2)
+```
+
+(1 point) divide the dataframe into Train and Test including in the Train dataset 80% of the observations and 20%, respectively, in Test dataset.
+```{r}
+set.seed(18)
+sample <- sample(nrow(df), floor(nrow(df)) * 0.8)
+
+Train <- df[sample,]
+Test <- df[-sample,]
+```
+
+(4 points) Build an initial model on Training dataset including as predictors all possible variables and comment on the model performance based on R square and R square Adjusted (which one will you use in this case).
+```{r}
+model1 <- lm(price~., data = Train)
+summary(model1)
+#R-squared adjusted compensates for the additional new variables.
+#We should take the R-squared adjusted in this case as we have many variables.
+```
+
+(5 points) What variables are signifcant predictors in the model?
+Comment on the relationships between each independent variable with the dependent variable. (Be attentive in determining the reference group while interpreting the relationships in case of categorical variable)
+
+Date, bedrooms, bathrooms, sqft of living, sqft of land, sqft above, year built, year renovated, latitude, longitude, sqft_living, sqft_lot15 are all significant. 
+Categorical variable is treated as significant if at least one
+of its categories is significant. All categorical variables: floors, waterfront, view, condition, zipcode and grade are significant as well. 
+
+(4 points) Remove the variables you consider might cause multicolinearity, explain the logic how you decide to omit this or that variable from the correlated pairs. Comment on the changes of model performance based on R square and coefficients.
+
+```{r}
+cor(df[, c(5:7, 13:15, 20:21)], df[, c(5:7, 13:15, 20:21)]) > 0.7
+
+#The highly correlated variables were
+#1.sqft_living and sqft_above
+#2.sqft_living and bathrooms 
+#3.sqft_living and sqft_living15
+#4.sqft_lot and sqft_lot15
+ 
+cor(df$price, df[, c(5:7, 13:15, 20:21)])
+
+#Sqft_living is just sqft_above+sqft_basement and gives no additional information.
+#Sqft_lot15 concerns the neighbors,so it is more logical to omit it
+#instead of omitting the land of the house itself.
+#Id is not significant. 
+
+model2 <- lm(price~.-sqft_living-sqft_lot15-id, data = Train)
+summary(model2)
+```
+
+(3 points) Try changing the reference group for grade variable to be high,(use the function ?relevel)
+run and save the 3rd model. Comment on the changes of coefficients, their significance and the overall model performance. 
+```{r}
+df$grade <- relevel(df$grade, ref = 12)
+model3 <- lm(price~.-sqft_living-sqft_lot15-id, data = Train)
+summary(model3)
+
+#As the reference group for the grade variable is now the highest,
+#the coefficients all become negative.
+#Now all the groups are significant.
+#The overall performance (R squared and R squared adjusted) does not change.
+
+df$grade <- relevel(df$grade, ref = 1)
+```
+
+
+(3 points) Make predictions on the testing data set using all 3 models, calculate RMSE and comment what model is doing better
+```{r}
+predictModel<-predict(model1, newdata = Test)
+RMSE1<-sqrt(mean((predictModel-Test$price)^2))
+RMSE1
+
+model2 <- lm(price~.-sqft_lot-sqft_lot15, data = Train)
+predictModel<-predict(model2, newdata = Test)
+RMSE2<-sqrt(mean((predictModel-Test$price)^2))
+RMSE2
+
+predictModel<-predict(model3, newdata = Test)
+RMSE3<-sqrt(mean((predictModel-Test$price)^2))
+RMSE3
+
+sd(df$price)
+#According to the RMSE-s, the first model is doing the best.
+#However, there is multicollinearity issues among its variables and
+#some coefficients do not make sense.
+#However, the overall performance difference is not big.
+
+```
+

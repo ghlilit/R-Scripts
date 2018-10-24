@@ -1,0 +1,3 @@
+"0","plt<-ggplot(df, aes(x=Attrition, fill=EnvironmentSatisfaction)) +"
+"0","  geom_bar(stat=""count"")+theme_minimal()"
+"0","plt"

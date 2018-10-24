@@ -1,0 +1,1 @@
+"0","ggplot(aes(df$bathrooms, df$bedrooms), data = df)+geom_point()"

@@ -1,0 +1,180 @@
+---
+title: "Homework 4"
+author: "Ghandilyan Lilit"
+date: "10/22/2018"
+output: pdf_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=F, message=F)
+library(ggplot2)
+library(rpart)
+library(dplyr)
+library(rpart.plot)
+library(caret)
+library(rattle)
+library(ROCR)
+```
+Read the file Cust_churn.
+This dataset contains information about  telecommunication company customers behavior.
+The dataset includes information about:
+Customers who left within the last month: Churn.
+The number of weeks since the subsciption: Account Length.
+The number of text messages : Message.
+The number of minutes spent on day time, evening, night and for international calls in respective variables.
+The number of times the customer  called the call center: Callcenter enquiry.
+The variables Call.Plan and Message.Plan indicate whether the customer has subscription to call plan and/or message plan.
+```{r}
+df <- read.csv("Cust_churn.csv")
+```
+
+
+The main objective of this assignment will be building models which will predict the customer churn (meaning that a customer stops using the services of this telecom company) as accurately as possible.
+
+(1 point) Check if the classes of the variables are correctly understood by R, if not, change the types of the factor variables.
+```{r}
+df$Churn <- as.factor(df$Churn)
+df$Call.Plan <- as.factor(df$Call.Plan)
+df$Message.Plan <- as.factor(df$Message.Plan)
+```
+
+(5 points) run some exploratory analysis to explore the dependence between customer churn and other variables
+```{r}
+ggplot(aes(Churn, Account.Length), data = df) + geom_boxplot()
+ggplot(aes(Churn, Intern..Min), data = df) + geom_boxplot()
+prop.table(table(df$CallCenter.enquiry, df$Churn),1)
+prop.table(table(df$Call.Plan, df$Churn),1)
+prop.table(table(df$Message.Plan, df$Churn),1)
+
+```
+
+Visualize the relationship of call center enquiries and churn.
+```{r}
+ggplot(aes(Churn, CallCenter.enquiry), data = df) + geom_boxplot()
+```
+
+Make visualization and comment on the difference between the distribution of minutes spent during daytime depending whether the customer left the company or not.
+```{r}
+ggplot(aes(Churn, Day.Mins), data = df) + geom_boxplot()
+```
+The customers who left spent more time talking during the daytime. 
+
+Construct hitograms for Evening  minutes and night minutes depending on the churn and make your comments.
+```{r}
+medD <- df %>% group_by(Churn) %>% summarize(mean(Day.Mins))
+medE <- df %>% group_by(Churn) %>% summarize(mean(Eve.Mins))
+ggplot(df, aes(x = Day.Mins, colour = Churn)) +
+  geom_freqpoly(binwidth = 20) + geom_vline(aes(xintercept = medD[[1,2]]),col='firebrick1',size=0.5) +
+  geom_vline(aes(xintercept = medD[[2,2]]),col='dodgerblue',size=0.5)
+ggplot(df, aes(x = Eve.Mins, colour = Churn)) +
+  geom_freqpoly(binwidth = 20) + geom_vline(aes(xintercept = medE[[1,2]]),col='firebrick1',size=0.5) +
+  geom_vline(aes(xintercept = medE[[2,2]]),col='dodgerblue',size=0.5)
+```
+It looks like the people who left spent more time talking both during daytime and evening. The lines on the graph show the means.
+
+Create a variable total min which will be equal to the sum of minuts spent during day time, evening and night. Then visualize the distribution of this variable based on call plan and churn. comment on the finding.
+```{r}
+df$Total.Mins <- df$Day.Mins + df$Eve.Mins + df$Night.Mins
+ggplot(aes(Call.Plan, Total.Mins), data = df) + geom_boxplot()
+ggplot(aes(Churn, Total.Mins), data = df) + geom_boxplot()
+df<-subset(df, select = -c(Total.Mins))
+
+```
+1.People who use Call plan tend to speak more.
+2.People who left speak more. 
+
+Visualize the relationship between message plan and churn. Do those who have a message plan have lower probability of attrition?
+```{r}
+plt<-ggplot(df, aes(x=Message.Plan, fill=Churn)) + geom_bar( position = "fill")
+plt
+```
+Yes. Those who don't have a Message plan left more.
+
+(1 point) Divide the data into train and test datasets having 80% of the cases in the training dataset.
+```{r}
+set.seed(1)
+index <- createDataPartition(df$Churn, p = 0.8, list = F)
+train <- df[index, ]
+test <- df[-index, ]
+
+```
+
+(7 points) Build a decision tree on the Train dataset aiming to predict the customer churn.
+Plot two decision trees, first displaying  number of cases in each node and the second displaying the probabilities.
+
+```{r}
+model <- rpart(Churn~., train)
+prp(model, type = 2, extra = 1)
+prp(model, type = 2, extra = 4)
+```
+
+(5 points)
+calculate Gini index and Entropy for any two terminal nodes
+```{r}
+#The lowest two nodes, first left, then right
+gini1 <- 1 - (0.86**2) - (0.14**2)
+gini1
+gini2 <- 1 - (0.13**2) - (0.87**2)
+gini2
+entropy1 <- -(0.86 * log(0.86, base = 2) + (0.14) * log(0.14, base = 2))
+entropy1
+entropy2 <- -(0.13 * log(0.13, base = 2) + (0.87) * log(0.87, base = 2))
+entropy2
+```
+
+(7 points) Make R display the decision rules and cmment on 3 rules. 
+```{r}
+asRules(model)
+```
+Last three:
+1. The predicted class is no, covers 1778 cases which is 67 percent of the data, probability of yes is 0.03
+2. The predicted class is no, covers 15 cases which is 1 percent of the data, probability of yes is 0.00
+3. The predicted class is no, covers 19 cases which is 1 percent of the data, probability of yes is 0.00
+
+(3 points) Build a logistic regression model on the same Training dataset having churn as a dependent variable and calculate exponents of the coeficients
+```{r}
+model2 <- glm(Churn~., data = train, family = "binomial")
+exp(coefficients(model2))
+```
+
+(7 points) if the customer has the following characteristics:
+DayMins=260, EveMins=150, Call.center.Enq=10, does not have message and call plans, have not made any international calls and messages and the account length is 20. Looking at the decision rules, what is the probability that a customer may churn?
+use the coeficients to calculate the same probability using the logistic regression model. See whether there are significant differences and make comment.
+```{r}
+coefficients(model2)
+exp <- exp(-8.2137089676 + 260 * 0.0123030656 + 150 * 0.0063869952 + 10 * 0.4912638747
+            + 20 * 0.0958378615 + 20 * 0.0480655065 + 20 * 0.0004362439)
+prob <- exp/(1+exp)
+prob
+```
+There is 0.73 percent probability that the customer will churn based on the Decision Tree.
+There is 0.97 percent probability that the customer will churn based on the Logistic Regression.
+
+(8 points) Use the two models to make predictions on the Test data set,
+Build a confusion matrix and comment on models' performance based on accuracy, sensitivity, specificity, PPV, NPV. Which one is doing better?
+
+```{r}
+predDT <- predict(model, newdata = test , type = "class")
+predLR <- predict(model2, newdata = test, type = "response")
+predLR <- factor(ifelse(predLR > 0.3, "1", "0"))
+confusionMatrix(data = predDT, test$Churn, positive = "1")
+confusionMatrix(data = predLR, test$Churn, positive = "1")
+```
+I chose the threshold 0.3 for Logistic Regression to make the Sensitivity a bit higher.
+Based on Accuracy Level, the Decision tree performs better. Both models have low Sensitivity value, which means they don't identify many customers who are going to leave. Both have high Specificity meaning that most customers who are not going to leave are identified. However, the Decision tree has higher PPV, meaning that the customers which it predicts to leave are indeed leaving. NPV are almost equal. 
+(6 points) Build  ROC curves and calculate AUC for both models and comment on the results.
+```{r}
+pred1 <- predict(model, test)
+pred1 <- prediction(pred1[,2],test$Churn)
+perf = performance(pred1, "tpr", "fpr")
+plot(perf, colorize = TRUE)
+
+pred2 <- predict(model2, test, type = "response")
+pred2 <- prediction(pred2,test$Churn)
+perf = performance(pred2, "tpr", "fpr")
+plot(perf, colorize = TRUE)
+
+auc <- performance(pred1, "auc")@y.values
+auc
+auc2 <- performance(pred2, "auc")@y.values
+auc2
+``` 

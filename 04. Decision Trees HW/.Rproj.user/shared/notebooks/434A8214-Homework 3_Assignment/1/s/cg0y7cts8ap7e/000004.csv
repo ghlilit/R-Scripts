@@ -1,0 +1,4 @@
+"0","pr2 <- predict(model2, newdata = Test, type = ""response"")"
+"0","pred2 <- prediction(pr2, Test$Attrition)"
+"0","perf = performance(pred2, ""tpr"", ""fpr"")"
+"0","plot(perf, colorize = TRUE)"

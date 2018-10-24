@@ -1,0 +1,4 @@
+"0","pred2 <- predict(model2, test, type = ""response"")"
+"0","pred2 <- prediction(pred2,test$Churn)"
+"0","perf = performance(pred2, ""tpr"", ""fpr"")"
+"0","plot(perf, colorize = TRUE)"

@@ -1,0 +1,57 @@
+---
+title: 'PSS #5'
+author: Ghandilyan Lilit'
+date: "October 10, 2017"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+Let's load the file Diabetes
+
+```{r}
+
+```
+
+Subset the data into 2 random samples, 1st one will serve as a training data set containing 80% of the cases  while the 2nd will be the test dataset containing the 20% of the cases, respectively.
+
+```{r}
+
+```
+
+
+Build a logistic regression model on the train data set and comment on the coeficients' significance.
+
+```{r}
+
+```
+
+Interprete the relationship between the independent variables on the logits and odds of being classified as having Diabetes 
+
+```{r}
+
+```
+
+Make predictions on the test data set
+Using the threshhold of 0.5 and then 0.6 to convert probabilities into classes.Create a confusion matrixes for both cases.
+Comment on the indicators (Accuracy, Sensitiviy, Specificity, NPV and PPV)
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+Create a ROC curves for each case and comment on it.
+Calculate AUC value  and make relevant comparisons.
+
+```{r}
+
+```
+
+```{r}
+
+```
+

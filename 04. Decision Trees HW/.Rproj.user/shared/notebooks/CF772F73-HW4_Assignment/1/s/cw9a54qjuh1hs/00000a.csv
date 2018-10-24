@@ -1,0 +1,2 @@
+"0","df$Total.Mins <- df$Day.Mins + df$Eve.Mins + df$Night.Mins"
+"0","ggplot(aes(Call.Plan, Total.Mins), data = df) + geom_boxplot()"

@@ -1,0 +1,3 @@
+"0","ggplot(df, aes(x = Eve.Mins, colour = Churn)) +"
+"0","  geom_freqpoly(binwidth = 20) + geom_vline(aes(xintercept = medE[[1,2]]),col='firebrick1',size=0.5) +"
+"0","  geom_vline(aes(xintercept = medE[[2,2]]),col='dodgerblue',size=0.5)"

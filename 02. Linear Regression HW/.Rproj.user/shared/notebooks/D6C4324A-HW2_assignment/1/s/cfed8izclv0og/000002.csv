@@ -1,0 +1,4 @@
+"0","set.seed(18)"
+"0","sample <- sample(nrow(df), floor(nrow(df)) * 0.8)"
+"0","Train <- df[sample,]"
+"0","Test <- df[-sample,]"

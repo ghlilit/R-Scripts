@@ -1,0 +1,3 @@
+"0","df$Churn <- as.factor(df$Churn)"
+"0","df$Call.Plan <- as.factor(df$Call.Plan)"
+"0","df$Message.Plan <- as.factor(df$Message.Plan)"

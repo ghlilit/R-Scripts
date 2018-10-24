@@ -1,0 +1,3 @@
+"0","trainIndex <- createDataPartition(df$Attrition, p = 0.8, list = F)"
+"0","Train <- df[trainIndex, ]"
+"0","Test <- df[-trainIndex, ]"

@@ -1,0 +1,4 @@
+"0","counts <- addmargins(table(df$Attrition, df$OverTime))"
+"0","prob <- 100/336"
+"0","plt<-ggplot(df, aes(x=OverTime, fill=Attrition)) + geom_bar(position = ""fill"")"
+"0","plt"

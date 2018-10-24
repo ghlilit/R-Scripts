@@ -1,0 +1,4 @@
+"0","set.seed(1)"
+"0","index <- createDataPartition(df$Churn, p = 0.8, list = F)"
+"0","train <- df[index, ]"
+"0","test <- df[-index, ]"
