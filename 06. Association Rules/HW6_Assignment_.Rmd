@@ -1,0 +1,65 @@
+```{r}
+library(arules)
+library(arulesViz)
+library("RColorBrewer")
+str(df)
+```
+
+(2 points)Read the file groceries which contains data about transactions made in the market.
+Make the data usable for Association Rules Mining. 
+(Hint. You can use function read.transactions)
+plot the data to see what are the first 5 most frequent items
+```{r}
+txn <- read.transactions("groceries.csv",rm.duplicates = FALSE, cols = NULL, sep = ",")
+itemFrequencyPlot(txn,
+   topN=10,
+   col=brewer.pal(8,'Pastel2'),
+   main='Relative Item Frequency Plot') 
+```
+Most frequent five items are whole milk, other vegetables, rolls/buns, soda and yogurt.
+
+(5 points) Using appriori algorithm, create the rules by setting the support to be 0.005 and confidence to be 0.1 Set the length of the rules to be 4.
+Interpret the meaning of support and confidence.
+```{r}
+rules <- apriori(txn, parameter = list(minlen = 4, maxlen = 4, supp = 0.005, conf = 0.1))
+```
+Support for itemset is the percentage of transactions which include the itemset.
+Confidence is the percent of antecedent transactions which also contain the consequent itemsets.
+We only allow the itemset with above the threshold values of 0.005 and 0.001 to be considered.
+
+(7 points) Inspect the first 5 rules. Sort them by support in descending order. 
+Interpret the first 2 rules. What is the meaning of support, comfidence and lift?
+```{r}
+inspect(rules[1:5])
+rules_df <- as(rules, "data.frame")
+rules_df[order(-rules_df$support),]
+```
+1  {fruit/vegetable juice, other vegetables, yogurt} => {whole milk} 
+Confidence shows that there is 0.61 probability that we will have whole milk bought given the customer bought the items on the left.
+Lift ratio shows how effective is the rule finding consequents (confidence / the overall probabilty of the right side).
+The more frequent is the itemset on the right, the lower is the lift ratio and the higher is the confidence, the higher the lift.
+Support shows overall impact. The probability that the itemset will occur is 0.005.
+
+2 {fruit/vegetable juice, whole milk, yogurt} => {other vegetables} 
+Confidence shows that there is 0.53 probability that we will have the vegetables and "other vegetables" bought given the customer bought the items on the left.
+Lift ratio shows how effective is the rule finding consequents (confidence / the overall probabilty of the right side).
+The more frequent is the itemset on the right, the lower is the lift ratio.
+Support shows overall impact. The probability that the itemset will occur is 0.005.
+
+
+(6 points) Subset the rules to the ones that contaiin only "whole milk" in the right hand side and with confidence more than 60%. 
+What group of products has the highest support?
+```{r}
+milk_rules <- subset(rules, rhs %ain% 'whole milk')
+milk_rules <- subset(rules, confidence > 0.6)
+milk_rules
+inspect(milk_rules[1:5])
+```
+The ones which are more frequent, (higher count) have higher support.
+
+(10 points) Explore the library(arulesViz) and make 3 insightful vizualisations on the data. 
+```{r}
+plot(milk_rules, type = "scatterplot")
+plot(milk_rules, method = "graph")
+plot(milk_rules, method = "grouped")
+```
